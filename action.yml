@@ -1,0 +1,66 @@
+---
+name: Build, Deploy to GitHub Pages and Deploy PR Preview
+author: WATAHIKI Yuto
+description: Build, Deploy to GitHub Pages and Deploy PR Preview
+inputs:
+  type:
+    description: Type of the project(vite)
+    required: true
+  folder:
+    description: Folder to deploy(If set to auto, it will be determined automatically.)
+    required: false
+    default: auto
+  pr-preview:
+    description: Whether to deploy PR Preview
+    required: false
+    default: true
+  branch:
+    description: Branch to deploy
+    required: false
+    default: gh-pages
+  umbrella-dir:
+    description: Directory containing all previews
+    required: false
+    default: pr-preview
+
+runs:
+  using: composite
+  steps:
+    - name: Determine the folder to deploy
+      id: folder
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const typeInput = "${{ inputs.type }}";
+          const folderInput = "${{ inputs.folder }}";
+          if (folderInput === "auto") {
+            if (typeInput === "vite") {
+              return "dist";
+            }
+          } else {
+            return folderInput;
+          }
+        result-encoding: string
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install npm packages
+      uses: chvmvd/npm-packages-install-action@v1.0.0
+
+    - name: Build Vite project
+      if: ${{ inputs.type == 'vite' }}
+      run: npx vite build
+      shell: bash
+
+    - name: Deploy to GitHub Pages and Deploy PR Preview
+      uses: chvmvd/github-pages-deploy-and-preview-action@main
+      with:
+        folder: ${{ steps.folder.outputs.result }}
+        pr-preview: ${{ inputs.pr-preview }}
+        branch: ${{ inputs.branch }}
+        umbrella-dir: ${{ inputs.umbrella-dir }}
+
+branding:
+  icon: git-branch
+  color: gray-dark
