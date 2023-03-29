@@ -77,7 +77,7 @@ runs:
       if: ${{ github.event_name == 'push' }}
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        folder: ${{ steps.folder.outputs.result }}
+        folder: ${{ inputs.rootDir }}/${{ steps.folder.outputs.result }}
         branch: ${{ inputs.branch }}
         clean-exclude: ${{ inputs.umbrella-dir }}
 
@@ -85,7 +85,7 @@ runs:
       if: ${{ github.event_name == 'pull_request' && inputs.pr-preview == 'true' }}
       uses: rossjrw/pr-preview-action@v1
       with:
-        source-dir: ${{ steps.folder.outputs.result }}
+        source-dir: ${{ inputs.rootDir }}/${{ steps.folder.outputs.result }}
         preview-branch: ${{ inputs.branch }}
         umbrella-dir: ${{ inputs.umbrella-dir }}
 
