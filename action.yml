@@ -73,12 +73,20 @@ runs:
       run: npx vite build
       shell: bash
 
-    - name: Deploy to GitHub Pages and Deploy PR Preview
-      uses: chvmvd/github-pages-deploy-and-preview-action@main
+    - name: Deploy to GitHub Pages
+      if: ${{ github.event_name == 'push' }}
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: ${{ steps.folder.outputs.result }}
-        pr-preview: ${{ inputs.pr-preview }}
         branch: ${{ inputs.branch }}
+        clean-exclude: ${{ inputs.umbrella-dir }}
+
+    - name: Deploy PR Preview
+      if: ${{ github.event_name == 'pull_request' && inputs.pr-preview == 'true' }}
+      uses: rossjrw/pr-preview-action@v1
+      with:
+        source-dir: ${{ steps.folder.outputs.result }}
+        preview-branch: ${{ inputs.branch }}
         umbrella-dir: ${{ inputs.umbrella-dir }}
 
 branding:
