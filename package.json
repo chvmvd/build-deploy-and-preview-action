@@ -1,0 +1,16 @@
+{
+  "name": "build-deploy-and-preview-action",
+  "version": "1.0.0",
+  "description": "GitHub Action that builds your project, deploys it and creates a PR preview.",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chvmvd/build-deploy-and-preview-action.git"
+  },
+  "author": "WATAHIKI Yuto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chvmvd/build-deploy-and-preview-action/issues"
+  },
+  "homepage": "https://github.com/chvmvd/build-deploy-and-preview-action#readme"
+}
