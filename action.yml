@@ -6,6 +6,10 @@ inputs:
   type:
     description: Type of the project(vite)
     required: true
+  rootDir:
+    description: Root directory of the project
+    required: false
+    default: .
   folder:
     description: Folder to deploy(If set to auto, it will be determined automatically.)
     required: false
@@ -47,9 +51,12 @@ runs:
 
     - name: Install npm packages
       uses: chvmvd/npm-packages-install-action@v1.0.0
+      with:
+        path: ${{ inputs.rootDir }}
 
     - name: Build Vite project
       if: ${{ inputs.type == 'vite' }}
+      working-directory: ${{ inputs.rootDir }}
       run: npx vite build
       shell: bash
 
