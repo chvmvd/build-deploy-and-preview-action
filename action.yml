@@ -49,10 +49,23 @@ runs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Install npm packages
-      uses: chvmvd/npm-packages-install-action@v1.0.0
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
       with:
-        path: ${{ inputs.rootDir }}
+        node-version: latest
+
+    - name: Cache npm packages
+      id: npm-cache
+      uses: actions/cache@v3
+      with:
+        path: "**/node_modules"
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Install npm packages
+      if: steps.npm-cache.outputs.cache-hit != 'true'
+      working-directory: ${{ inputs.rootDir }}
+      run: npm ci
+      shell: bash
 
     - name: Build Vite project
       if: ${{ inputs.type == 'vite' }}
