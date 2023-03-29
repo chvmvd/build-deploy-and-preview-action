@@ -46,6 +46,26 @@ runs:
           }
         result-encoding: string
 
+    - name: Make BASE_URL
+      id: base-url
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const githubEventName = "${{ github.event_name }}";
+          const githubRepository = "${{ github.repository }}"; // owner/repo
+          const githubRepositoryOwner = "${{ github.repository_owner }}"; // owner
+          const githubRepositoryName = githubRepository.slice(githubRepositoryOwner.length + 1); // repo
+          const refName = "${{ github.ref_name }}"; // PR_NUMBER/merge
+          const prNumber = refName.slice(0, refName.length - 6); // PR_NUMBER
+          if (githubEventName === "push") {
+            const baseUrl = `/${githubRepositoryName}`;
+            return baseUrl; // /repo
+          }else if (githubEventName === "pull_request") {
+            const baseUrl = `/${githubRepositoryName}/pr-preview/pr-${prNumber}`;
+            return baseUrl; // /repo/pr-preview/pr-PR_NUMBER
+          }
+        result-encoding: string
+
     - name: Checkout
       uses: actions/checkout@v3
 
@@ -70,7 +90,7 @@ runs:
     - name: Build Vite project
       if: ${{ inputs.type == 'vite' }}
       working-directory: ${{ inputs.rootDir }}
-      run: npx vite build
+      run: npx vite build --base ${{ steps.base-url.outputs.result }}/
       shell: bash
 
     - name: Deploy to GitHub Pages
