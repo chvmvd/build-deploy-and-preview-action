@@ -4,18 +4,18 @@ author: WATAHIKI Yuto
 description: Build, Deploy to GitHub Pages and Deploy PR Preview
 inputs:
   type:
-    description: Type of the project(vite)
+    description: Type of the project(`vite` is the only supported type for now)
     required: true
   rootDir:
     description: Root directory of the project
     required: false
     default: .
   folder:
-    description: Folder to deploy(If set to auto, it will be determined automatically.)
+    description: Folder to deploy(If set to auto, it will use the default folder for the type of the project.)
     required: false
     default: auto
   pr-preview:
-    description: Whether to deploy PR Preview
+    description: Whether to deploy PR Preview(`true` or `false`)
     required: false
     default: true
   branch:
