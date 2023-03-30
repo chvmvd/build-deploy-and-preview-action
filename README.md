@@ -9,13 +9,21 @@ GitHub Action that automatically builds your project, deploys to GitHub Pages an
 
 ## Table of Contents
 
+- [Build, Deploy to GitHub Pages and Deploy PR Preview Action](#build-deploy-to-github-pages-and-deploy-pr-preview-action)
+  - [Table of Contents](#table-of-contents)
+  - [About](#about)
+  - [Usage](#usage)
+  - [Configuration](#configuration)
+  - [License](#license)
+  - [Contributing](#contributing)
+
 ## About
 
 This action will automatically build your project, deploy to GitHub Pages and create a PR preview.
 
 ## Usage
 
-Usage is very simple and can be done in the following two steps.
+Usage is very simple and can be done with the following two steps.
 
 First, you need to create a workflow file in your repository. For example, if you want to use this action with a Vite project, you can create a file called `build-deploy-and-preview.yml` in the `.github/workflows` directory of your repository with the following contents:
 
