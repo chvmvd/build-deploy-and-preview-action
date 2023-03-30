@@ -2,7 +2,9 @@
   "name": "build-deploy-and-preview-action",
   "version": "1.0.0",
   "description": "GitHub Action that builds your project, deploys it and creates a PR preview.",
-  "scripts": {},
+  "scripts": {
+    "format": "prettier --write ."
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chvmvd/build-deploy-and-preview-action.git"
