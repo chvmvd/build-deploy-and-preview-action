@@ -18,8 +18,8 @@ inputs:
     description: Whether to deploy PR Preview(`true` or `false`)
     required: false
     default: true
-  branch:
-    description: Branch to deploy
+  deployment-branch:
+    description: Branch that the project will be deployed to
     required: false
     default: gh-pages
   umbrella-dir:
@@ -107,7 +107,7 @@ runs:
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: ${{ inputs.rootDir }}/${{ steps.folder.outputs.result }}
-        branch: ${{ inputs.branch }}
+        branch: ${{ inputs.deployment-branch }}
         clean-exclude: ${{ inputs.umbrella-dir }}
 
     - name: Deploy PR Preview
@@ -115,7 +115,7 @@ runs:
       uses: rossjrw/pr-preview-action@v1
       with:
         source-dir: ${{ inputs.rootDir }}/${{ steps.folder.outputs.result }}
-        preview-branch: ${{ inputs.branch }}
+        preview-branch: ${{ inputs.deployment-branch }}
         umbrella-dir: ${{ inputs.umbrella-dir }}
         custom-url: ${{ inputs.custom-url }}
 
