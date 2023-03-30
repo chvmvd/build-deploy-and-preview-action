@@ -12,5 +12,8 @@
   "bugs": {
     "url": "https://github.com/chvmvd/build-deploy-and-preview-action/issues"
   },
-  "homepage": "https://github.com/chvmvd/build-deploy-and-preview-action#readme"
+  "homepage": "https://github.com/chvmvd/build-deploy-and-preview-action#readme",
+  "devDependencies": {
+    "prettier": "2.8.7"
+  }
 }
