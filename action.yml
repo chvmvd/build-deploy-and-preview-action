@@ -22,6 +22,10 @@ inputs:
     description: Branch that contains the production code(Default is the default branch of the repository)
     required: false
     default: ${{ github.event.repository.default_branch }}
+  development-branch:
+    description: Branch that contains the development code
+    required: false
+    default: ""
   deployment-branch:
     description: Branch that the project will be deployed to
     required: false
@@ -57,25 +61,36 @@ runs:
     - name: Make BASE_URL
       id: base-url
       uses: actions/github-script@v6
+      env:
+        DEVELOPMENT_BRANCHES: ${{ inputs.development-branch }}
       with:
         script: |
           const githubEventName = "${{ github.event_name }}";
           const githubRepository = "${{ github.repository }}"; // owner/repo
           const githubRepositoryOwner = "${{ github.repository_owner }}"; // owner
           const githubRepositoryName = githubRepository.slice(githubRepositoryOwner.length + 1); // repo
-          const refName = "${{ github.ref_name }}"; // PR_NUMBER/merge
-          const prNumber = refName.slice(0, refName.length - 6); // PR_NUMBER
-          if (githubRepositoryName === `${githubRepositoryOwner}.github.io` || "${{ inputs.custom-url }}" !== "") {
-            const baseUrl = "";
-            return baseUrl;
-          } else {
-            if (githubEventName === "push") {
-              const baseUrl = `/${githubRepositoryName}`;
+          let productionBaseUrl = "";
+          if (githubRepositoryName !== `${githubRepositoryOwner}.github.io` && "${{ inputs.custom-url }}" === "") {
+            productionBaseUrl = `/${githubRepositoryName}`; // /repo
+          }
+          if (githubEventName === "push") {
+            const githubBranchName = "${{ github.ref_name }}"; // branch
+            const developmentBranches = process.env.DEVELOPMENT_BRANCHES.split("\n");
+            // base URL of the production site
+            if (githubEventName === "push" && githubBranchName === "${{ inputs.production-branch }}") {
+              const baseUrl = productionBaseUrl;
               return baseUrl; // /repo
-            }else if (githubEventName === "pull_request") {
-              const baseUrl = `/${githubRepositoryName}/pr-preview/pr-${prNumber}`;
-              return baseUrl; // /repo/pr-preview/pr-PR_NUMBER
             }
+            // base URL of the development site
+            else if (githubEventName === "push" && developmentBranches.includes(githubBranchName)) {
+              const baseUrl = `${productionBaseUrl}/${githubBranchName}`;
+              return baseUrl; // /repo/branch
+            }
+          } else if (githubEventName === "pull_request") {
+            const refName = "${{ github.ref_name }}"; // PR_NUMBER/merge
+            const prNumber = refName.slice(0, refName.length - 6); // PR_NUMBER
+            const baseUrl = `${productionBaseUrl}/pr-preview/pr-${prNumber}`;
+            return baseUrl; // /repo/pr-preview/pr-PR_NUMBER
           }
         result-encoding: string
 
@@ -106,13 +121,21 @@ runs:
       run: npx vite build --base ${{ steps.base-url.outputs.result }}/
       shell: bash
 
-    - name: Deploy to GitHub Pages
+    - name: Deploy Production to GitHub Pages
       if: ${{ github.event_name == 'push' && github.ref_name == inputs.production-branch }}
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: ${{ inputs.rootDir }}/${{ steps.folder.outputs.result }}
-        branch: ${{ inputs.deployment-branch }}
-        clean-exclude: ${{ inputs.umbrella-dir }}
+        clean-exclude: |
+          ${{ inputs.umbrella-dir }}
+          ${{ inputs.development-branch }}
+
+    - name: Deploy Development to GitHub Pages
+      if: ${{ github.event_name == 'push' && contains(inputs.development-branch, github.ref_name) }}
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: ${{ inputs.rootDir }}/${{ steps.folder.outputs.result }}
+        target-folder: ${{ github.ref_name }}
 
     - name: Deploy PR Preview
       if: ${{ github.event_name == 'pull_request' && inputs.pr-preview == 'true' }}
