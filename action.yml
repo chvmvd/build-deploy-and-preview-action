@@ -57,12 +57,17 @@ runs:
           const githubRepositoryName = githubRepository.slice(githubRepositoryOwner.length + 1); // repo
           const refName = "${{ github.ref_name }}"; // PR_NUMBER/merge
           const prNumber = refName.slice(0, refName.length - 6); // PR_NUMBER
-          if (githubEventName === "push") {
-            const baseUrl = `/${githubRepositoryName}`;
-            return baseUrl; // /repo
-          }else if (githubEventName === "pull_request") {
-            const baseUrl = `/${githubRepositoryName}/pr-preview/pr-${prNumber}`;
-            return baseUrl; // /repo/pr-preview/pr-PR_NUMBER
+          if (githubRepositoryName === `${githubRepositoryOwner}.github.io`) {
+            const baseUrl = "";
+            return baseUrl;
+          } else {
+            if (githubEventName === "push") {
+              const baseUrl = `/${githubRepositoryName}`;
+              return baseUrl; // /repo
+            }else if (githubEventName === "pull_request") {
+              const baseUrl = `/${githubRepositoryName}/pr-preview/pr-${prNumber}`;
+              return baseUrl; // /repo/pr-preview/pr-PR_NUMBER
+            }
           }
         result-encoding: string
 
