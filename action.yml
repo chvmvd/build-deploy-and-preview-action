@@ -18,6 +18,10 @@ inputs:
     description: Whether to deploy PR Preview(`true` or `false`)
     required: false
     default: true
+  production-branch:
+    description: Branch that contains the production code(Default is the default branch of the repository)
+    required: false
+    default: ${{ github.event.repository.default_branch }}
   deployment-branch:
     description: Branch that the project will be deployed to
     required: false
@@ -103,7 +107,7 @@ runs:
       shell: bash
 
     - name: Deploy to GitHub Pages
-      if: ${{ github.event_name == 'push' }}
+      if: ${{ github.event_name == 'push' && github.ref_name == inputs.production-branch }}
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: ${{ inputs.rootDir }}/${{ steps.folder.outputs.result }}

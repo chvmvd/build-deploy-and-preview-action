@@ -63,15 +63,16 @@ Second, you need to ensure that your GitHub repository is configured to use GitH
 
 The following configuration options are available:
 
-| Name                | Description                                                                                                              | Required | Default      |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------- | ------------ |
-| `type`              | The type of project you want to build(currently only `vite` is supported).                                               | `true`   |              |
-| `rootDir`           | The root directory of your project.                                                                                      | `false`  | `.`          |
-| `folder`            | The folder that contains the built files(If set to `auto`, it will use the default folder for the type of the project.). | `false`  | `auto`       |
-| `pr-preview`        | Whether to create a PR preview or not.                                                                                   | `false`  | `true`       |
-| `deployment-branch` | The branch to use for GitHub Pages.                                                                                      | `false`  | `gh-pages`   |
-| `umbrella-dir`      | The directory that will contain all PR previews.                                                                         | `false`  | `pr-preview` |
-| `custom-url`        | The custom URL to use.                                                                                                   | `false`  | `""`         |
+| Name                | Description                                                                                                              | Required | Default                              |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------------------------ |
+| `type`              | The type of project you want to build(currently only `vite` is supported).                                               | `true`   |                                      |
+| `rootDir`           | The root directory of your project.                                                                                      | `false`  | `.`                                  |
+| `folder`            | The folder that contains the built files(If set to `auto`, it will use the default folder for the type of the project.). | `false`  | `auto`                               |
+| `pr-preview`        | Whether to create a PR preview or not.                                                                                   | `false`  | `true`                               |
+| `production-branch` | The branch that contains the production code.                                                                            | `false`  | the default branch of the repository |
+| `deployment-branch` | The branch that the project will be deployed to.                                                                         | `false`  | `gh-pages`                           |
+| `umbrella-dir`      | The directory that will contain all PR previews.                                                                         | `false`  | `pr-preview`                         |
+| `custom-url`        | The custom URL to use.                                                                                                   | `false`  | `""`                                 |
 
 ## License
 
