@@ -11,7 +11,7 @@ inputs:
     required: false
     default: .
   folder:
-    description: Folder to deploy(If set to auto, it will use the default folder for the type of the project.)
+    description: Folder to deploy(If set to `auto`, it will use the default folder for the type of the project.)
     required: false
     default: auto
   pr-preview:
