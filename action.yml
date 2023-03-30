@@ -26,6 +26,10 @@ inputs:
     description: Directory containing all previews
     required: false
     default: pr-preview
+  custom-url:
+    description: Custom URL to deploy
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -57,7 +61,7 @@ runs:
           const githubRepositoryName = githubRepository.slice(githubRepositoryOwner.length + 1); // repo
           const refName = "${{ github.ref_name }}"; // PR_NUMBER/merge
           const prNumber = refName.slice(0, refName.length - 6); // PR_NUMBER
-          if (githubRepositoryName === `${githubRepositoryOwner}.github.io`) {
+          if (githubRepositoryName === `${githubRepositoryOwner}.github.io` || "${{ inputs.custom-url }}" !== "") {
             const baseUrl = "";
             return baseUrl;
           } else {
@@ -113,6 +117,7 @@ runs:
         source-dir: ${{ inputs.rootDir }}/${{ steps.folder.outputs.result }}
         preview-branch: ${{ inputs.branch }}
         umbrella-dir: ${{ inputs.umbrella-dir }}
+        custom-url: ${{ inputs.custom-url }}
 
 branding:
   icon: git-branch

@@ -71,6 +71,7 @@ The following configuration options are available:
 | `pr-preview`   | Whether to create a PR preview or not.                                                                                   | `false`  | `true`       |
 | `branch`       | The branch to use for GitHub Pages.                                                                                      | `false`  | `gh-pages`   |
 | `umbrella-dir` | The directory that will contain all PR previews.                                                                         | `false`  | `pr-preview` |
+| `custom-url`   | The custom URL to use.                                                                                                   | `false`  | `""`         |
 
 ## License
 
