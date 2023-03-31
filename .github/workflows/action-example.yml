@@ -1,0 +1,28 @@
+name: Action Example
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency: ci-${{ github.ref }}
+
+jobs:
+  action-test:
+    name: Action Example
+    runs-on: ubuntu-latest
+    steps:
+      - name: Action Example
+        uses: chvmvd/build-deploy-and-preview-action@v1.0.1
+        with:
+          type: vite
+          rootDir: test
