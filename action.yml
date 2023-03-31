@@ -1,17 +1,17 @@
 ---
 name: Build, Deploy to GitHub Pages and Deploy PR Preview
 author: WATAHIKI Yuto
-description: Build, Deploy to GitHub Pages and Deploy PR Preview
+description: This action builds a project and deploys it to GitHub Pages and also deploys PR preview automatically.
 inputs:
   type:
-    description: Type of the project(`vite` is the only supported type for now)
+    description: Type of the project(Other settings will be automatically set for the type of the project. Currently only `vite` is supported.)
     required: true
   rootDir:
-    description: Root directory of the project
+    description: Root directory of the project(Default is the current directory)
     required: false
     default: .
   folder:
-    description: Folder to deploy(If set to `auto`, it will use the default folder for the type of the project.)
+    description: Folder that contains the built files(If set to `auto`, it will use the default folder for the type of the project.)
     required: false
     default: auto
   pr-preview:
@@ -22,21 +22,19 @@ inputs:
     description: Branch that contains the production code(Default is `main` or `master`)
     required: false
   development-branch:
-    description: Branch that contains the development code
+    description: Branch that contains the development code(This can be multiple branches. If you want to specify multiple branches, separate them with a newline.)
     required: false
-    default: ""
   deployment-branch:
     description: Branch that the project will be deployed to
     required: false
     default: gh-pages
   umbrella-dir:
-    description: Directory containing all previews
+    description: Directory that will contain all previews
     required: false
     default: pr-preview
   custom-url:
     description: Custom URL to deploy
     required: false
-    default: ""
 
 runs:
   using: composite
@@ -74,7 +72,7 @@ runs:
           }
         result-encoding: string
 
-    - name: Make BASE_URL
+    - name: Determine the base url
       id: base-url
       uses: actions/github-script@v6
       env:
@@ -82,31 +80,26 @@ runs:
       with:
         script: |
           const githubEventName = "${{ github.event_name }}";
-          const githubRepository = "${{ github.repository }}"; // owner/repo
           const githubRepositoryOwner = "${{ github.repository_owner }}"; // owner
-          const githubRepositoryName = githubRepository.slice(githubRepositoryOwner.length + 1); // repo
-          let productionBaseUrl = "";
-          if (githubRepositoryName !== `${githubRepositoryOwner}.github.io` && "${{ inputs.custom-url }}" === "") {
-            productionBaseUrl = `/${githubRepositoryName}`; // /repo
-          }
+          const githubRepositoryName = "${{ github.event.repository.name }}"; // repo
+          const repositoryBaseUrl = githubRepositoryName === `${githubRepositoryOwner}.github.io` || "${{ inputs.custom-url }}" !== "" ? "" : `/${githubRepositoryName}`; // "" or /<repo>
           if (githubEventName === "push") {
             const githubBranchName = "${{ github.ref_name }}"; // branch
             const developmentBranches = process.env.DEVELOPMENT_BRANCHES.split("\n");
             // base URL of the production site
-            if (githubEventName === "push" && githubBranchName === "${{ steps.production-branch.outputs.result }}") {
-              const baseUrl = productionBaseUrl;
-              return baseUrl; // /repo
+            if (githubBranchName === "${{ steps.production-branch.outputs.result }}") {
+              const baseUrl = repositoryBaseUrl;
+              return baseUrl; // /<repo>
             }
             // base URL of the development site
-            else if (githubEventName === "push" && developmentBranches.includes(githubBranchName)) {
-              const baseUrl = `${productionBaseUrl}/${githubBranchName}`;
-              return baseUrl; // /repo/branch
+            else if (developmentBranches.includes(githubBranchName)) {
+              const baseUrl = `${repositoryBaseUrl}/${githubBranchName}`;
+              return baseUrl; // /<repo>/<branch>
             }
           } else if (githubEventName === "pull_request") {
-            const refName = "${{ github.ref_name }}"; // PR_NUMBER/merge
-            const prNumber = refName.slice(0, refName.length - 6); // PR_NUMBER
-            const baseUrl = `${productionBaseUrl}/pr-preview/pr-${prNumber}`;
-            return baseUrl; // /repo/pr-preview/pr-PR_NUMBER
+            const prNumber = "${{ github.event.number }}"; // pr-number
+            const baseUrl = `${repositoryBaseUrl}/pr-preview/pr-${prNumber}`;
+            return baseUrl; // /<repo>/pr-preview/<pr-number>
           }
         result-encoding: string
 

@@ -5,7 +5,7 @@
 [![license](https://img.shields.io/badge/license-MIT-informational.svg)](LICENSE)
 ![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
-GitHub Action that automatically builds your project, deploys to GitHub Pages and creates a PR preview.
+GitHub Action that automatically builds your project, deploys it to GitHub Pages and creates a PR preview.
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@ GitHub Action that automatically builds your project, deploys to GitHub Pages an
 
 ## About
 
-This action will automatically build your project, deploy to GitHub Pages and create a PR preview.
+This action will automatically build your project, deploy it to GitHub Pages and also create a PR preview.
 
 ## Usage
 
@@ -63,17 +63,17 @@ Second, you need to ensure that your GitHub repository is configured to use GitH
 
 The following configuration options are available:
 
-| Name                 | Description                                                                                                              | Required | Default                              |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------- | ------------------------------------ |
-| `type`               | The type of project you want to build(currently only `vite` is supported).                                               | `true`   |                                      |
-| `rootDir`            | The root directory of your project.                                                                                      | `false`  | `.`                                  |
-| `folder`             | The folder that contains the built files(If set to `auto`, it will use the default folder for the type of the project.). | `false`  | `auto`                               |
-| `pr-preview`         | Whether to create a PR preview or not.                                                                                   | `false`  | `true`                               |
-| `production-branch`  | The branch that contains the production code.                                                                            | `false`  | the default branch of the repository |
-| `development-branch` | The branch that contains the development code.(This should contain each pattern as a separate line.)                     | `false`  |                                      |
-| `deployment-branch`  | The branch that the project will be deployed to.                                                                         | `false`  | `gh-pages`                           |
-| `umbrella-dir`       | The directory that will contain all PR previews.                                                                         | `false`  | `pr-preview`                         |
-| `custom-url`         | The custom URL to use.                                                                                                   | `false`  | `""`                                 |
+| Name                 | Description                                                                                                                                                                                                                 | Required | Default            |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------ |
+| `type`               | The type of your project. (Other settings will be automatically set for the type of the project. Currently only `vite` is supported.)                                                                                       | `true`   |                    |
+| `rootDir`            | The root directory of your project. (Default is the current directory.)                                                                                                                                                     | `false`  | `.`                |
+| `folder`             | The folder that contains the built files. (If set to `auto`, it will use the default folder for the type of the project.)                                                                                                   | `false`  | `auto`             |
+| `pr-preview`         | Whether to create a PR preview or not.                                                                                                                                                                                      | `false`  | `true`             |
+| `production-branch`  | The branch that contains the production code. (Default is `main` or `master`)                                                                                                                                               | `false`  | `main` or `master` |
+| `development-branch` | The branch that contains the development code. It will be deployed to `https://<owner>.github.io/<repo>/<branch>`. (This can be multiple branches. If you want to specify multiple branches, separate them with a newline.) | `false`  |                    |
+| `deployment-branch`  | The branch that the project will be deployed to.                                                                                                                                                                            | `false`  | `gh-pages`         |
+| `umbrella-dir`       | The directory that will contain all PR previews.                                                                                                                                                                            | `false`  | `pr-preview`       |
+| `custom-url`         | The custom URL to deploy.                                                                                                                                                                                                   | `false`  |                    |
 
 ## License
 
