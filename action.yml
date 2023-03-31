@@ -19,9 +19,8 @@ inputs:
     required: false
     default: true
   production-branch:
-    description: Branch that contains the production code(Default is the default branch of the repository)
+    description: Branch that contains the production code(Default is `main` or `master`)
     required: false
-    default: ${{ github.event.repository.default_branch }}
   development-branch:
     description: Branch that contains the development code
     required: false
@@ -58,6 +57,23 @@ runs:
           }
         result-encoding: string
 
+    - name: Determine the production branch
+      id: production-branch
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const productionBranchInput = "${{ inputs.production-branch }}";
+          if (productionBranchInput === "") {
+            if ("${{ github.event_name }}" === "push" && "${{ github.ref_name }}" === "master") {
+              return "master";
+            } else {
+              return "main";
+            }
+          } else {
+            return productionBranchInput;
+          }
+        result-encoding: string
+
     - name: Make BASE_URL
       id: base-url
       uses: actions/github-script@v6
@@ -77,7 +93,7 @@ runs:
             const githubBranchName = "${{ github.ref_name }}"; // branch
             const developmentBranches = process.env.DEVELOPMENT_BRANCHES.split("\n");
             // base URL of the production site
-            if (githubEventName === "push" && githubBranchName === "${{ inputs.production-branch }}") {
+            if (githubEventName === "push" && githubBranchName === "${{ steps.production-branch.outputs.result }}") {
               const baseUrl = productionBaseUrl;
               return baseUrl; // /repo
             }
@@ -122,7 +138,7 @@ runs:
       shell: bash
 
     - name: Deploy Production to GitHub Pages
-      if: ${{ github.event_name == 'push' && github.ref_name == inputs.production-branch }}
+      if: ${{ github.event_name == 'push' && github.ref_name == steps.production-branch.outputs.result }}
       uses: JamesIves/github-pages-deploy-action@v4
       with:
         folder: ${{ inputs.rootDir }}/${{ steps.folder.outputs.result }}
