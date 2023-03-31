@@ -110,16 +110,10 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: latest
-
-    - name: Cache npm packages
-      id: npm-cache
-      uses: actions/cache@v3
-      with:
-        path: "**/node_modules"
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        cache: npm
+        cache-dependency-path: ${{ inputs.rootDir }}/package-lock.json
 
     - name: Install npm packages
-      if: steps.npm-cache.outputs.cache-hit != 'true'
       working-directory: ${{ inputs.rootDir }}
       run: npm ci
       shell: bash
