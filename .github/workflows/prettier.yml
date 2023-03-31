@@ -15,16 +15,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: latest
-
-      - name: Cache npm packages
-        id: npm-cache
-        uses: actions/cache@v3
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          cache: npm
 
       - name: Install npm packages
-        if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci
         shell: bash
 
