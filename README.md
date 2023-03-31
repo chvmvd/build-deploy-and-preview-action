@@ -4,6 +4,7 @@
 [![Release version badge](https://img.shields.io/github/v/release/chvmvd/build-deploy-and-preview-action.svg?logo=github)](https://github.com/chvmvd/build-deploy-and-preview-action/releases)
 [![license](https://img.shields.io/badge/license-MIT-informational.svg)](LICENSE)
 ![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+[![GitHub Marketplace badge](https://img.shields.io/badge/action-marketplace-blue.svg?logo=github&color=orange)](https://github.com/marketplace/actions/build-deploy-to-github-pages-and-deploy-pr-preview)
 
 GitHub Action that automatically builds your project, deploys it to GitHub Pages and creates a PR preview.
 
@@ -59,6 +60,8 @@ jobs:
 
 Second, you need to ensure that your GitHub repository is configured to use GitHub Pages. You can do this by going to the `Settings` tab of your repository and selecting the `Pages` section. You can then select the branch that you want to use for GitHub Pages(The `gh-pages` is used by convention and is used by this action by default).
 
+<img width="759" alt="capture of the `Pages` section" src="https://user-images.githubusercontent.com/104971044/229016748-96f21ec8-242e-4a74-a8a5-ed5576f00347.png">
+
 ## Configuration
 
 The following configuration options are available:
@@ -74,6 +77,10 @@ The following configuration options are available:
 | `deployment-branch`  | The branch that the project will be deployed to.                                                                                                                                                                            | `false`  | `gh-pages`         |
 | `umbrella-dir`       | The directory that will contain all PR previews.                                                                                                                                                                            | `false`  | `pr-preview`       |
 | `custom-url`         | The custom URL to deploy.                                                                                                                                                                                                   | `false`  |                    |
+
+## Roadmap
+
+Currently, only Vite is supported. I will add support for other frameworks in the future.
 
 ## License
 
