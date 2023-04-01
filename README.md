@@ -14,6 +14,8 @@ GitHub Action that automatically builds your project, deploys it to GitHub Pages
   - [Table of Contents](#table-of-contents)
   - [About](#about)
   - [Usage](#usage)
+    - [Vite](#vite)
+    - [Docusaurus](#docusaurus)
   - [Configuration](#configuration)
   - [License](#license)
   - [Contributing](#contributing)
