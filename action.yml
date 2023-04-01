@@ -4,7 +4,7 @@ author: WATAHIKI Yuto
 description: This action builds a project and deploys it to GitHub Pages and also deploys PR preview automatically.
 inputs:
   type:
-    description: Type of the project(Other settings will be automatically set for the type of the project. Currently only `vite` is supported.)
+    description: Type of the project(Other settings will be automatically set for the type of the project. Currently only `vite` and `docusaurus` are supported.)
     required: true
   package-manager:
     description: Package manager to use(`npm`, `yarn` or `pnpm`)
@@ -43,7 +43,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Determine the folder to deploy
+    - name: Determine the Folder to Deploy
       id: folder
       uses: actions/github-script@v6
       with:
@@ -53,13 +53,15 @@ runs:
           if (folderInput === "auto") {
             if (typeInput === "vite") {
               return "dist";
+            } else if (typeInput === "docusaurus") {
+              return "build";
             }
           } else {
             return folderInput;
           }
         result-encoding: string
 
-    - name: Determine the production branch
+    - name: Determine the Production Branch
       id: production-branch
       uses: actions/github-script@v6
       with:
@@ -76,11 +78,11 @@ runs:
           }
         result-encoding: string
 
-    - name: Determine the base url
+    - name: Determine the Base URL
       id: base-url
-      uses: actions/github-script@v6
       env:
         DEVELOPMENT_BRANCHES: ${{ inputs.development-branch }}
+      uses: actions/github-script@v6
       with:
         script: |
           const githubEventName = "${{ github.event_name }}";
@@ -123,28 +125,51 @@ runs:
         cache: ${{ inputs.package-manager }}
         cache-dependency-path: ${{ inputs.rootDir }}/${{ (inputs.package-manager == 'npm') && 'package-lock.json' || (inputs.package-manager == 'yarn') && 'yarn.lock' || (inputs.package-manager == 'pnpm') && 'pnpm-lock.yaml' }}
 
-    - name: Install npm packages
+    - name: Install npm Packages
       if: ${{ inputs.package-manager == 'npm' }}
       working-directory: ${{ inputs.rootDir }}
       run: npm ci
       shell: bash
 
-    - name: Install yarn packages
+    - name: Install yarn Packages
       if: ${{ inputs.package-manager == 'yarn' }}
       working-directory: ${{ inputs.rootDir }}
       run: yarn install --frozen-lockfile
       shell: bash
 
-    - name: Install pnpm packages
+    - name: Install pnpm Packages
       if: ${{ inputs.package-manager == 'pnpm' }}
       working-directory: ${{ inputs.rootDir }}
       run: pnpm install --frozen-lockfile
       shell: bash
 
-    - name: Build Vite project
+    - name: Determine Executable Command
+      id: executable-command
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const packageManager = "${{ inputs.package-manager }}";
+          if (packageManager === "npm") {
+            return "npx";
+          } else if (packageManager === "yarn") {
+            return "yarn";
+          } else if (packageManager === "pnpm") {
+            return "pnpx";
+          }
+        result-encoding: string
+
+    - name: Build Vite Project
       if: ${{ inputs.type == 'vite' }}
       working-directory: ${{ inputs.rootDir }}
-      run: ${{ (inputs.package-manager == 'npm') && 'npx' || (inputs.package-manager == 'yarn') && 'yarn' || (inputs.package-manager == 'pnpm') && 'pnpx' }} vite build --base ${{ steps.base-url.outputs.result }}/
+      run: ${{ steps.executable-command.outputs.result }} vite build --base ${{ steps.base-url.outputs.result }}/
+      shell: bash
+
+    - name: Build Docusaurus Project
+      if: ${{ inputs.type == 'docusaurus' }}
+      env:
+        BASE_URL: ${{ steps.base-url.outputs.result }}
+      working-directory: ${{ inputs.rootDir }}
+      run: ${{ steps.executable-command.outputs.result }} docusaurus build
       shell: bash
 
     - name: Deploy Production to GitHub Pages
