@@ -76,7 +76,7 @@ runs:
           }
         result-encoding: string
 
-    - name: Determine the base url
+    - name: Determine the base URL
       id: base-url
       uses: actions/github-script@v6
       env:
