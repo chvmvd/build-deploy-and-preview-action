@@ -24,9 +24,13 @@ This action will automatically build your project, deploy it to GitHub Pages and
 
 ## Usage
 
-Usage is very simple and can be done with the following two steps.
+Usage is very simple and can be done with just a few steps.
 
-First, you need to create a workflow file in your repository. For example, if you want to use this action with a Vite project, you can create a file called `build-deploy-and-preview.yml` in the `.github/workflows` directory of your repository with the following contents:
+### Vite
+
+If you are using Vite, it is very easy to use this action. This action will automatically configure the base URL for you.
+
+First, you need to create a workflow file in your repository. For example, you can create a file called `build-deploy-and-preview.yml` in the `.github/workflows` directory of your repository with the following contents:
 
 ```yaml
 name: Build, Deploy to GitHub Pages and Deploy PR Preview
@@ -53,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build, Deploy to GitHub Pages and Deploy PR Preview
-        uses: chvmvd/build-deploy-and-preview-action@v1.0.0
+        uses: chvmvd/build-deploy-and-preview-action@v1.2.0
         with:
           type: vite
 ```
@@ -62,13 +66,59 @@ Second, you need to ensure that your GitHub repository is configured to use GitH
 
 <img width="759" alt="capture of the `Pages` section" src="https://user-images.githubusercontent.com/104971044/229016748-96f21ec8-242e-4a74-a8a5-ed5576f00347.png">
 
+### Docusaurus
+
+First, since GitHub Pages deploys your project to `https://<owner>.github.io/<repo>`, you have to configure the base URL for your project.
+
+You can do this by editing the `docusaurus.config.js` file in the root directory of your project.
+
+Inside `docusaurus.config.js`, add the following line to the `baseUrl` property of the `config` object(This action provides the `BASE_URL` environment variable that contains the base URL of your project):
+
+```js
+baseUrl: process.env.GITHUB_ACTIONS ? `${process.env.BASE_URL}/` : "/",
+```
+
+Second, you need to create a workflow file in your repository. For example, you can create a file called `build-deploy-and-preview.yml` in the `.github/workflows` directory of your repository with the following contents:
+
+```yaml
+name: Build, Deploy to GitHub Pages and Deploy PR Preview
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency: ci-${{ github.ref }}
+
+jobs:
+  build-deploy-and-preview:
+    name: Build, Deploy to GitHub Pages and Deploy PR Preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build, Deploy to GitHub Pages and Deploy PR Preview
+        uses: chvmvd/build-deploy-and-preview-action@v1.2.0
+        with:
+          type: docusaurus
+```
+
+Third, you need to ensure that your GitHub repository is configured to use GitHub Pages. Please refer to the [Vite](#vite) section for more information.
+
 ## Configuration
 
 The following configuration options are available:
 
 | Name                 | Description                                                                                                                                                                                                                 | Required | Default            |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------ |
-| `type`               | The type of your project. (Other settings will be automatically set for the type of the project. Currently only `vite` is supported.)                                                                                       | `true`   |                    |
+| `type`               | The type of your project. (Other settings will be automatically set for the type of the project. Currently only `vite` and `docusaurus` are supported.)                                                                     | `true`   |                    |
 | `package-manager`    | The package manager that will be used to install dependencies. (`npm`, `yarn` or `pnpm`)                                                                                                                                    | `false`  | `npm`              |
 | `rootDir`            | The root directory of your project. (Default is the current directory.)                                                                                                                                                     | `false`  | `.`                |
 | `folder`             | The folder that contains the built files. (If set to `auto`, it will use the default folder for the type of the project.)                                                                                                   | `false`  | `auto`             |
@@ -81,7 +131,7 @@ The following configuration options are available:
 
 ## Roadmap
 
-Currently, only Vite is supported. I will add support for other frameworks in the future.
+Currently, only Vite and Docusaurus are supported. I will add support for other frameworks in the future.
 
 ## License
 

@@ -4,7 +4,7 @@ author: WATAHIKI Yuto
 description: This action builds a project and deploys it to GitHub Pages and also deploys PR preview automatically.
 inputs:
   type:
-    description: Type of the project(Other settings will be automatically set for the type of the project. Currently only `vite` is supported.)
+    description: Type of the project(Other settings will be automatically set for the type of the project. Currently only `vite` and `docusaurus` are supported.)
     required: true
   package-manager:
     description: Package manager to use(`npm`, `yarn` or `pnpm`)
@@ -53,6 +53,8 @@ runs:
           if (folderInput === "auto") {
             if (typeInput === "vite") {
               return "dist";
+            } else if (typeInput === "docusaurus") {
+              return "build";
             }
           } else {
             return folderInput;
@@ -141,10 +143,33 @@ runs:
       run: pnpm install --frozen-lockfile
       shell: bash
 
+    - name: Determine Executable Command
+      id: executable-command
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const packageManager = "${{ inputs.package-manager }}";
+          if (packageManager === "npm") {
+            return "npx";
+          } else if (packageManager === "yarn") {
+            return "yarn";
+          } else if (packageManager === "pnpm") {
+            return "pnpx";
+          }
+        result-encoding: string
+
     - name: Build Vite Project
       if: ${{ inputs.type == 'vite' }}
       working-directory: ${{ inputs.rootDir }}
-      run: ${{ (inputs.package-manager == 'npm') && 'npx' || (inputs.package-manager == 'yarn') && 'yarn' || (inputs.package-manager == 'pnpm') && 'pnpx' }} vite build --base ${{ steps.base-url.outputs.result }}/
+      run: ${{ steps.executable-command.outputs.result }} vite build --base ${{ steps.base-url.outputs.result }}/
+      shell: bash
+
+    - name: Build Docusaurus Project
+      if: ${{ inputs.type == 'docusaurus' }}
+      env:
+        BASE_URL: ${{ steps.base-url.outputs.result }}
+      working-directory: ${{ inputs.rootDir }}
+      run: ${{ steps.executable-command.outputs.result }} docusaurus build
       shell: bash
 
     - name: Deploy Production to GitHub Pages
