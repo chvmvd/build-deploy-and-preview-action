@@ -6,6 +6,10 @@ inputs:
   type:
     description: Type of the project(Other settings will be automatically set for the type of the project. Currently only `vite` is supported.)
     required: true
+  package-manager:
+    description: Package manager to use(`npm`, `yarn` or `pnpm`)
+    required: false
+    default: npm
   rootDir:
     description: Root directory of the project(Default is the current directory)
     required: false
@@ -106,22 +110,41 @@ runs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Setup pnpm
+      if: ${{ inputs.package-manager == 'pnpm' }}
+      uses: pnpm/action-setup@v2
+      with:
+        version: latest
+
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: latest
-        cache: npm
-        cache-dependency-path: ${{ inputs.rootDir }}/package-lock.json
+        cache: ${{ inputs.package-manager }}
+        cache-dependency-path: ${{ inputs.rootDir }}/${{ (inputs.package-manager == 'npm') && 'package-lock.json' || (inputs.package-manager == 'yarn') && 'yarn.lock' || (inputs.package-manager == 'pnpm') && 'pnpm-lock.yaml' }}
 
     - name: Install npm packages
+      if: ${{ inputs.package-manager == 'npm' }}
       working-directory: ${{ inputs.rootDir }}
       run: npm ci
+      shell: bash
+
+    - name: Install yarn packages
+      if: ${{ inputs.package-manager == 'yarn' }}
+      working-directory: ${{ inputs.rootDir }}
+      run: yarn install --frozen-lockfile
+      shell: bash
+
+    - name: Install pnpm packages
+      if: ${{ inputs.package-manager == 'pnpm' }}
+      working-directory: ${{ inputs.rootDir }}
+      run: pnpm install --frozen-lockfile
       shell: bash
 
     - name: Build Vite project
       if: ${{ inputs.type == 'vite' }}
       working-directory: ${{ inputs.rootDir }}
-      run: npx vite build --base ${{ steps.base-url.outputs.result }}/
+      run: ${{ (inputs.package-manager == 'npm') && 'npx' || (inputs.package-manager == 'yarn') && 'yarn' || (inputs.package-manager == 'pnpm') && 'pnpx' }} vite build --base ${{ steps.base-url.outputs.result }}/
       shell: bash
 
     - name: Deploy Production to GitHub Pages
