@@ -43,7 +43,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Determine the folder to deploy
+    - name: Determine the Folder to Deploy
       id: folder
       uses: actions/github-script@v6
       with:
@@ -59,7 +59,7 @@ runs:
           }
         result-encoding: string
 
-    - name: Determine the production branch
+    - name: Determine the Production Branch
       id: production-branch
       uses: actions/github-script@v6
       with:
@@ -76,11 +76,11 @@ runs:
           }
         result-encoding: string
 
-    - name: Determine the base URL
+    - name: Determine the Base URL
       id: base-url
-      uses: actions/github-script@v6
       env:
         DEVELOPMENT_BRANCHES: ${{ inputs.development-branch }}
+      uses: actions/github-script@v6
       with:
         script: |
           const githubEventName = "${{ github.event_name }}";
@@ -123,25 +123,25 @@ runs:
         cache: ${{ inputs.package-manager }}
         cache-dependency-path: ${{ inputs.rootDir }}/${{ (inputs.package-manager == 'npm') && 'package-lock.json' || (inputs.package-manager == 'yarn') && 'yarn.lock' || (inputs.package-manager == 'pnpm') && 'pnpm-lock.yaml' }}
 
-    - name: Install npm packages
+    - name: Install npm Packages
       if: ${{ inputs.package-manager == 'npm' }}
       working-directory: ${{ inputs.rootDir }}
       run: npm ci
       shell: bash
 
-    - name: Install yarn packages
+    - name: Install yarn Packages
       if: ${{ inputs.package-manager == 'yarn' }}
       working-directory: ${{ inputs.rootDir }}
       run: yarn install --frozen-lockfile
       shell: bash
 
-    - name: Install pnpm packages
+    - name: Install pnpm Packages
       if: ${{ inputs.package-manager == 'pnpm' }}
       working-directory: ${{ inputs.rootDir }}
       run: pnpm install --frozen-lockfile
       shell: bash
 
-    - name: Build Vite project
+    - name: Build Vite Project
       if: ${{ inputs.type == 'vite' }}
       working-directory: ${{ inputs.rootDir }}
       run: ${{ (inputs.package-manager == 'npm') && 'npx' || (inputs.package-manager == 'yarn') && 'yarn' || (inputs.package-manager == 'pnpm') && 'pnpx' }} vite build --base ${{ steps.base-url.outputs.result }}/
