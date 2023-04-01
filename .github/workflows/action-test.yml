@@ -1,4 +1,4 @@
-name: Action Example
+name: Action Test
 
 on:
   push:
@@ -18,11 +18,14 @@ concurrency: ci-${{ github.ref }}
 
 jobs:
   action-test:
-    name: Action Example
+    name: Action Test
     runs-on: ubuntu-latest
     steps:
-      - name: Action Example
-        uses: chvmvd/build-deploy-and-preview-action@v1.0.1
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Action Test
+        uses: ./
         with:
           type: vite
           rootDir: test

@@ -1,7 +1,7 @@
 function App() {
   return (
     <>
-      <h1>Action Example</h1>
+      <h1>Action Test</h1>
       <p>This is a demonstration.</p>
       <p>
         <a href="https://github.com/chvmvd/build-deploy-and-preview-action">
