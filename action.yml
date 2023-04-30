@@ -109,7 +109,7 @@ runs:
           }
         result-encoding: string
 
-    - name: Checkout
+    - name: Checkout Code
       uses: actions/checkout@v3
 
     - name: Setup pnpm
