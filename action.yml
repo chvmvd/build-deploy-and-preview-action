@@ -105,7 +105,7 @@ runs:
           } else if (githubEventName === "pull_request") {
             const prNumber = "${{ github.event.number }}"; // pr-number
             const baseUrl = `${repositoryBaseUrl}/pr-preview/pr-${prNumber}`;
-            return baseUrl; // /<repo>/pr-preview/<pr-number>
+            return baseUrl; // /<repo>/pr-preview/pr-<pr-number>
           }
         result-encoding: string
 
