@@ -125,19 +125,19 @@ runs:
         cache: ${{ inputs.package-manager }}
         cache-dependency-path: ${{ inputs.rootDir }}/${{ (inputs.package-manager == 'npm') && 'package-lock.json' || (inputs.package-manager == 'yarn') && 'yarn.lock' || (inputs.package-manager == 'pnpm') && 'pnpm-lock.yaml' }}
 
-    - name: Install Node Packages
+    - name: Install Packages with npm
       if: ${{ inputs.package-manager == 'npm' }}
       working-directory: ${{ inputs.rootDir }}
       run: npm ci
       shell: bash
 
-    - name: Install yarn Packages
+    - name: Install Packages with yarn
       if: ${{ inputs.package-manager == 'yarn' }}
       working-directory: ${{ inputs.rootDir }}
       run: yarn install --frozen-lockfile
       shell: bash
 
-    - name: Install pnpm Packages
+    - name: Install Packages with pnpm
       if: ${{ inputs.package-manager == 'pnpm' }}
       working-directory: ${{ inputs.rootDir }}
       run: pnpm install --frozen-lockfile
